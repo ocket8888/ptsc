@@ -1,10 +1,11 @@
-#!/usr/bin/env python3
 import os
 from utilities import normalizePath
 
 def findConfigFile(searchPath):
 	while True:
+		print("searching: "+searchPath)
 		if os.path.isfile(searchPath+"/tsconfig.json"):
+			print("config found")
 			return searchPath+"/tsconfig.json"
 		newPath = os.path.dirname(searchPath)
 		if newPath == searchPath:
@@ -40,3 +41,4 @@ def computeCommonSourceDirectoryOfFilenames(fileNames, currentDirectory):
 		return currentDirectory
 
 	return "/"+"/".join(commonPathComponents)
+

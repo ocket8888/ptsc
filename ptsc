@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+from sys import argv
+#import argparse
+
+#parser = argparse.ArgumentParser(description='Generates Javascript from source Typescript files.', epilog="This program is in early stages of development, don't expect it to work in general.")
+
+#parser.add_argument('-o', dest='objfile', type=str, default=False, help='Specify a file containing a definition for an object.')
+
+sourceFiles = argv[1:]
+
+if len(sourceFiles)==0:
+	print("No source files entered!")
+
