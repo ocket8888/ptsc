@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 from sys import argv
+from performance import performance
+from types import *
+from core import *
+from parser import *
+from program import compilerHost
 #import argparse
 
 #parser = argparse.ArgumentParser(description='Generates Javascript from source Typescript files.', epilog="This program is in early stages of development, don't expect it to work in general.")
@@ -10,4 +15,5 @@ sourceFiles = argv[1:]
 
 if len(sourceFiles)==0:
 	print("No source files entered!")
+
 

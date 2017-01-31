@@ -42,3 +42,27 @@ def computeCommonSourceDirectoryOfFilenames(fileNames, currentDirectory):
 
 	return "/"+"/".join(commonPathComponents)
 
+class CompilerHost:
+	"""This class handles accessing system functions, probably
+	unneccessary, but what're you gonna do, amirite?"""
+
+	def __init__(self, compilerOptions, setParentNodes=False):
+		self.existingDirectories = dict()
+		self.outputFingerPrints = dict()
+		self.setParentNodes = setParentNodes
+		import sys
+		self.sys = sys
+
+	def getSourceFile(self, fileName, languageVersion, onError=None):
+		text = None
+		try:
+			performance.mark("beforeIORead")
+			text = open(fileName).read()
+			performance.mark("afterIORead")
+			performance.measure("I/O Read", "beforeIORead", "afterIORead")
+		except Exception as e:
+			if onError:
+				onError(e)
+		return createSourceFile(fileName, text, languageVersion, self.setParentNodes) if text != None else None
+
+compilerHost = CompilerHost(None)
