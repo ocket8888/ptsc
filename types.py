@@ -315,3 +315,12 @@ class SyntaxKind(Enum):
 	LastJSDocNode = JSDocLiteralType
 	FirstJSDocTagNode = JSDocComment
 	LastJSDocTagNode = JSDocNeverKeyword
+
+
+class Diagnostic:
+	file
+	start
+	length
+	messageText
+	category
+	code

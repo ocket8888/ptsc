@@ -1,7 +1,7 @@
 class Scanner:
 	"""Scans a source file to build a parse tree"""
 
-	def __init__(self, languageVersion, skipTrivia, languageVariant=languageVariant.Standard, text=None, onError=None, start=None, length=None):
+	def __init__(self, languageVersion, skipTrivia, languageVariant=languageVariant.Standard, text=None, onError=None, start=0, length=0):
 		self.pos = 0
 		self.end = 0
 		self.startPos = 0
@@ -18,3 +18,13 @@ class Scanner:
 		self.end = len(self.text) if length == None else start+length
 		self.setTextPos(start if start else 0)
 
+	def setTextPos(self, textPos):
+		Debug.Assert(textPos >= 0)
+		self.pos = textPos
+		self.startPos = textPos
+		self.tokenPos = textPos
+		self.token = SyntaxKind.Unknown
+		self.precedingLineBreak = False
+		self.tokenValue = ""
+		self.hasExtendedUnicodeEscape = False
+		self.tokenIsUnterminated = False

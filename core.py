@@ -62,7 +62,30 @@ class AssertionLevel(Enum):
 	Normal = 1
 	Aggressive = 2
 	VeryAggressive = 3
-		
+
+
+class debug:
+	"""Used to enforce assertions and cause compilation
+	to fail in case of unrecoverable errors."""
+	
+	def __init__(self):
+		self.currentAssertionLevel = AssertionLevel.none
+
+	def shouldAssert(self, level):
+		return (self.currentAssertionLevel >= level)
+
+	def Assert(self, expression, message="", verboseDebugInfo=None):
+		if not expression:
+			verboseDebugString = ""
+			if verboseDebugInfo:
+				verboseDebugString = "\nVerboseDebugInformation: " + verboseDebugInfo()
+			raise DebuggerError("Debug Failure. False expression: " + message + verboseDebugString)
+
+	def fail(self, message):
+		self.Assert(False, message)
+
+Debug = debug()
+						
 
 def getScriptKindFromFileName(fileName):
 	ext = fileName.split(".")
