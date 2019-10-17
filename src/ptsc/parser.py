@@ -144,6 +144,19 @@ class Parser():
 		return stmt
 
 	def parseReturnStatement(self) -> ast.ReturnStatement:
+		"""
+		Parses the next return statement in the parser's lexer's input buffer.
+
+		>>> p = Parser(lexer.Lexer("return true;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].TokenLiteral()
+		'return'
+		>>> p.Statements[0].ReturnValue.Value
+		True
+		>>> p.Statements[0].ReturnValue.TokenLiteral()
+		'true'
+		"""
 		stmt = ast.ReturnStatement(Token=self.curToken)
 
 		self.nextToken()
@@ -188,9 +201,32 @@ class Parser():
 		return precedences.get(self.curToken.Type, Precedence.LOWEST)
 
 	def parseIdentifier(self) -> ast.Expression:
+		"""
+		Parses a single identifier expression, e.g. "a;"
+
+		>>> p = Parser(lexer.Lexer("foobar;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Value
+		'foobar'
+		>>> p.Statements[0].Expression.TokenLiteral()
+		'foobar'
+		"""
+
 		return ast.Identifier(Value=self.curToken.Literal, Token=self.curToken)
 
 	def parseIntegerLiteral(self) -> typing.Optional[ast.Expression]:
+		"""
+		Parses a single literal integer expression, e.g. "5;"
+
+		>>> p = Parser(lexer.Lexer("5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Value
+		5
+		>>> p.Statements[0].Expression.TokenLiteral()
+		'5'
+		"""
 		lit = ast.IntegerLiteral(Token=self.curToken.Literal)
 
 		try:
