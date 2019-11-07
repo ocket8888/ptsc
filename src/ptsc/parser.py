@@ -29,6 +29,10 @@ precedences: typing.Dict[token.TokenType, Precedence] = {
 }
 
 class Parser():
+	"""
+	Parser is the class responsible for parsing every part of a program. Pass it input through a
+	lexer.Lexer object.
+	"""
 	def __init__(self, l: lexer.Lexer):
 		self.l = l
 		self.errors: typing.List[str] = []
