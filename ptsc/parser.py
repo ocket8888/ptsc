@@ -264,6 +264,17 @@ class Parser():
 		return expr
 
 	def parseBoolean(self) -> ast.Expression:
+		"""
+		Parses a single boolean-valued expression, e.g. "true".
+
+		>>> p = Parser(lexer.Lexer("true;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Value
+		True
+		>>> p.Statements[0].Expression.TokenLiteral()
+		'true'
+		"""
 		return ast.Boolean(Value=self.curTokenIs(tstoken.TokenType.TRUE), Token=self.curToken)
 
 	def parseGroupedExpression(self) -> typing.Optional[ast.Expression]:
