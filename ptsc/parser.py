@@ -128,6 +128,24 @@ class Parser():
 		'x'
 		>>> p.Statements[0].Value.Value
 		5
+		>>> p = Parser(lexer.Lexer("let y = true;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].TokenLiteral()
+		'let'
+		>>> p.Statements[0].Name.Value
+		'y'
+		>>> p.Statements[0].Value.Value
+		True
+		>>> p = Parser(lexer.Lexer("let foobar = y;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].TokenLiteral()
+		'let'
+		>>> p.Statements[0].Name.Value
+		'foobar'
+		>>> p.Statements[0].Value.Value
+		'y'
 		"""
 		stmt = ast.LetStatement(Token=self.curToken)
 
