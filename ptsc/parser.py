@@ -264,11 +264,43 @@ class Parser():
 		return ast.StringLiteral(Value=self.curToken.Literal, Token=self.curToken)
 
 	def parsePrefixExpression(self) -> ast.Expression:
+		"""
+		Parses an expression with a prefix operator, e.g. '!true;'
+
+		>>> p = Parser(lexer.Lexer("!5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'!'
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("-15;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'-'
+		>>> p.Statements[0].Expression.Right.Value
+		15
+		>>> p = Parser(lexer.Lexer("!true;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'!'
+		>>> p.Statements[0].Expression.Right.Value
+		True
+		>>> p = Parser(lexer.Lexer("!false;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'!'
+		>>> p.Statements[0].Expression.Right.Value
+		False
+		"""
 		expr = ast.PrefixExpression(Operator=self.curToken.Literal, Token=self.curToken)
 
 		self.nextToken()
 
-		expr.Right = self.parseExpression()
+		expr.Right = self.parseExpression(Precedence.PREFIX)
 
 		return expr
 
