@@ -616,5 +616,5 @@ def trace(msg: str) -> str:
 	return msg
 
 def untrace(msg: str):
-	tracePrint("END {msg}")
+	tracePrint(f"END {msg}")
 	traceLevel -= 1
