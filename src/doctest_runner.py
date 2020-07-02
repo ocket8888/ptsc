@@ -1,14 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 if __name__ == "__main__":
-	from ptsc import ast, builtins, environment, evaluator, lexer, object as obj, parser, repl, token
+	from ptsc import ast, builtins, environment, evaluator, lexer, tsobject, parser, repl, tstoken
 	import doctest
 	doctest.testmod(ast)
 	doctest.testmod(builtins)
 	doctest.testmod(environment)
 	doctest.testmod(evaluator)
 	doctest.testmod(lexer)
-	doctest.testmod(obj)
+	doctest.testmod(tsobject)
 	doctest.testmod(parser)
 	doctest.testmod(repl)
-	doctest.testmod(token)
+	doctest.testmod(tstoken)

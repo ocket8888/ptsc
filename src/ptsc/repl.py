@@ -5,7 +5,7 @@ import typing
 from . import environment
 from . import evaluator
 from . import lexer
-from . import object as object
+from . import tsobject
 from . import parser
 
 PROMPT = os.environ.get("PS2", ">> ")

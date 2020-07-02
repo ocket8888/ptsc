@@ -33,7 +33,8 @@ setup(
 		'Programming Language :: Python :: 3.7'
 	],
 	keywords='Typescript compiler',
-	packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+	packages="src/ptsc",
+	# packages=find_packages("src", exclude=['contrib', 'docs', 'tests']),
 	install_requires=['setuptools'],
 	entry_points={
 		'console_scripts': [

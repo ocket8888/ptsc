@@ -3,7 +3,7 @@ import typing
 
 from . import ast
 from . import lexer
-from . import token
+from . import tstoken
 
 class Precedence(enum.IntEnum):
 	LOWEST = 0
@@ -15,17 +15,17 @@ class Precedence(enum.IntEnum):
 	CALL = 6
 	INDEX = 7
 
-precedences: typing.Dict[token.TokenType, Precedence] = {
-	token.TokenType.EQ: Precedence.EQUALS,
-	token.TokenType.NOT_EQ: Precedence.EQUALS,
-	token.TokenType.LT: Precedence.LESSGREATER,
-	token.TokenType.GT: Precedence.LESSGREATER,
-	token.TokenType.PLUS: Precedence.SUM,
-	token.TokenType.MINUS: Precedence.SUM,
-	token.TokenType.SLASH: Precedence.PRODUCT,
-	token.TokenType.ASTERISK: Precedence.PRODUCT,
-	token.TokenType.LPAREN: Precedence.CALL,
-	token.TokenType.LBRACKET: Precedence.INDEX
+precedences: typing.Dict[tstoken.TokenType, Precedence] = {
+	tstoken.TokenType.EQ: Precedence.EQUALS,
+	tstoken.TokenType.NOT_EQ: Precedence.EQUALS,
+	tstoken.TokenType.LT: Precedence.LESSGREATER,
+	tstoken.TokenType.GT: Precedence.LESSGREATER,
+	tstoken.TokenType.PLUS: Precedence.SUM,
+	tstoken.TokenType.MINUS: Precedence.SUM,
+	tstoken.TokenType.SLASH: Precedence.PRODUCT,
+	tstoken.TokenType.ASTERISK: Precedence.PRODUCT,
+	tstoken.TokenType.LPAREN: Precedence.CALL,
+	tstoken.TokenType.LBRACKET: Precedence.INDEX
 }
 
 class Parser():
@@ -37,35 +37,35 @@ class Parser():
 		self.l = l
 		self.errors: typing.List[str] = []
 
-		self.curToken: token.Token = None
-		self.peekToken: token.Token = None
+		self.curToken: tstoken.Token = None
+		self.peekToken: tstoken.Token = None
 
 		self.prefixParseFns = {
-			token.TokenType.IDENT: self.parseIdentifier,
-			token.TokenType.INT: self.parseIntegerLiteral,
-			token.TokenType.STRING: self.parseStringLiteral,
-			token.TokenType.BANG: self.parsePrefixExpression,
-			token.TokenType.MINUS: self.parsePrefixExpression,
-			token.TokenType.TRUE: self.parseBoolean,
-			token.TokenType.FALSE: self.parseBoolean,
-			token.TokenType.LPAREN: self.parseGroupedExpression,
-			token.TokenType.IF: self.parseIfExpression,
-			token.TokenType.FUNCTION: self.parseFunctionLiteral,
-			token.TokenType.LBRACKET: self.parseArrayLiteral,
-			token.TokenType.LBRACE: self.parseHashLiteral
+			tstoken.TokenType.IDENT: self.parseIdentifier,
+			tstoken.TokenType.INT: self.parseIntegerLiteral,
+			tstoken.TokenType.STRING: self.parseStringLiteral,
+			tstoken.TokenType.BANG: self.parsePrefixExpression,
+			tstoken.TokenType.MINUS: self.parsePrefixExpression,
+			tstoken.TokenType.TRUE: self.parseBoolean,
+			tstoken.TokenType.FALSE: self.parseBoolean,
+			tstoken.TokenType.LPAREN: self.parseGroupedExpression,
+			tstoken.TokenType.IF: self.parseIfExpression,
+			tstoken.TokenType.FUNCTION: self.parseFunctionLiteral,
+			tstoken.TokenType.LBRACKET: self.parseArrayLiteral,
+			tstoken.TokenType.LBRACE: self.parseHashLiteral
 		}
 
 		self.infixParseFns = {
-			token.TokenType.PLUS: self.parseInfixExpression,
-			token.TokenType.MINUS: self.parseInfixExpression,
-			token.TokenType.SLASH: self.parseInfixExpression,
-			token.TokenType.ASTERISK: self.parseInfixExpression,
-			token.TokenType.EQ: self.parseInfixExpression,
-			token.TokenType.NOT_EQ: self.parseInfixExpression,
-			token.TokenType.LT: self.parseInfixExpression,
-			token.TokenType.GT: self.parseInfixExpression,
-			token.TokenType.LPAREN: self.parseCallExpression,
-			token.TokenType.LBRACKET: self.parseIndexExpression
+			tstoken.TokenType.PLUS: self.parseInfixExpression,
+			tstoken.TokenType.MINUS: self.parseInfixExpression,
+			tstoken.TokenType.SLASH: self.parseInfixExpression,
+			tstoken.TokenType.ASTERISK: self.parseInfixExpression,
+			tstoken.TokenType.EQ: self.parseInfixExpression,
+			tstoken.TokenType.NOT_EQ: self.parseInfixExpression,
+			tstoken.TokenType.LT: self.parseInfixExpression,
+			tstoken.TokenType.GT: self.parseInfixExpression,
+			tstoken.TokenType.LPAREN: self.parseCallExpression,
+			tstoken.TokenType.LBRACKET: self.parseIndexExpression
 		}
 
 		self.nextToken()
@@ -75,13 +75,13 @@ class Parser():
 		self.curToken = self.peekToken
 		self.peekToken = self.l.NextToken()
 
-	def curTokenIs(self, t: token.TokenType) -> bool:
+	def curTokenIs(self, t: tstoken.TokenType) -> bool:
 		return self.curToken.Type == t
 
-	def peekTokenIs(self, t: token.TokenType) -> bool:
+	def peekTokenIs(self, t: tstoken.TokenType) -> bool:
 		return self.peekToken.Type == t
 
-	def expectPeek(self, t: token.TokenType) -> bool:
+	def expectPeek(self, t: tstoken.TokenType) -> bool:
 		if self.peekTokenIs(t):
 			self.nextToken()
 			return True
@@ -91,16 +91,16 @@ class Parser():
 	def Errors(self) -> typing.List[str]:
 		return self.errors
 
-	def peekError(self, t: token.TokenType):
-		self.errors.append(f"expected next token to be {t}, got {self.peekToken.Type} instead")
+	def peekError(self, t: tstoken.TokenType):
+		self.errors.append(f"expected next tstoken to be {t}, got {self.peekToken.Type} instead")
 
-	def noPrefixParseFnError(self, t: token.TokenType):
+	def noPrefixParseFnError(self, t: tstoken.TokenType):
 		self.errors.append(f"no prefix parse function for {t} found")
 
 	def ParseProgram(self) -> ast.Program:
 		p = ast.Program()
 
-		while not self.curTokenIs(token.TokenType.EOF):
+		while not self.curTokenIs(tstoken.TokenType.EOF):
 			stmt = self.parseStatement()
 			if stmt is not None:
 				p.Statements.append(stmt)
@@ -109,9 +109,9 @@ class Parser():
 		return p
 
 	def parseStatement(self) -> ast.Statement:
-		if self.curToken.Type == token.TokenType.LET:
+		if self.curToken.Type == tstoken.TokenType.LET:
 			return self.parseLetStatement()
-		if self.curToken.Type == token.TokenType.RETURN:
+		if self.curToken.Type == tstoken.TokenType.RETURN:
 			return self.parseReturnStatement()
 		return self.parseExpressionStatement()
 
@@ -126,23 +126,23 @@ class Parser():
 		'let'
 		>>> p.Statements[0].Name.Value
 		'x'
-		>>> p.Statements[0].Name.TokenLiteral()
-		'x'
+		>>> p.Statements[0].Value.Value
+		5
 		"""
 		stmt = ast.LetStatement(Token=self.curToken)
 
-		if not self.expectPeek(token.TokenType.IDENT):
+		if not self.expectPeek(tstoken.TokenType.IDENT):
 			return None
 
 		stmt.Name = ast.Identifier(Value=self.curToken.Literal, Token=self.curToken)
 
-		if not self.expectPeek(token.TokenType.ASSIGN):
+		if not self.expectPeek(tstoken.TokenType.ASSIGN):
 			return None
 
 		self.nextToken()
 		stmt.Value = self.parseExpression(Precedence.LOWEST)
 
-		if self.peekTokenIs(token.TokenType.SEMICOLON):
+		if self.peekTokenIs(tstoken.TokenType.SEMICOLON):
 			self.nextToken()
 
 		return stmt
@@ -167,7 +167,7 @@ class Parser():
 
 		stmt.ReturnValue = self.parseExpression(Precedence.LOWEST)
 
-		if self.peekTokenIs(token.TokenType.SEMICOLON):
+		if self.peekTokenIs(tstoken.TokenType.SEMICOLON):
 			self.nextToken()
 
 		return stmt
@@ -176,7 +176,7 @@ class Parser():
 		stmt = ast.ExpressionStatement(Token=self.curToken)
 		stmt.Expression = self.parseExpression(Precedence.LOWEST)
 
-		if self.peekTokenIs(token.TokenType.SEMICOLON):
+		if self.peekTokenIs(tstoken.TokenType.SEMICOLON):
 			self.nextToken()
 
 		return stmt
@@ -188,7 +188,7 @@ class Parser():
 			return None
 		leftExp = prefix()
 
-		while not self.peekTokenIs(token.TokenType.SEMICOLON) and prec < self.peekPrecedence():
+		while not self.peekTokenIs(tstoken.TokenType.SEMICOLON) and prec < self.peekPrecedence():
 			infix = self.infixParseFns.get(self.peekToken.Type, None)
 			if infix is None:
 				return leftExp
@@ -264,33 +264,33 @@ class Parser():
 		return expr
 
 	def parseBoolean(self) -> ast.Expression:
-		return ast.Boolean(Value=self.curTokenIs(token.TokenType.TRUE), Token=self.curToken)
+		return ast.Boolean(Value=self.curTokenIs(tstoken.TokenType.TRUE), Token=self.curToken)
 
 	def parseGroupedExpression(self) -> typing.Optional[ast.Expression]:
 		self.nextToken()
 		exp = self.parseExpression(Precedence.LOWEST)
 
-		return exp if self.expectPeek(token.TokenType.RPAREN) else None
+		return exp if self.expectPeek(tstoken.TokenType.RPAREN) else None
 
 	def parseIfExpression(self) -> typing.Optional[ast.Expression]:
 		expr = ast.IfExpression(Token=self.curToken)
 
-		if not self.expectPeek(token.TokenType.LPAREN):
+		if not self.expectPeek(tstoken.TokenType.LPAREN):
 			return None
 
 		self.nextToken()
 		expr.Condition = self.parseExpression(Precedence.LOWEST)
 
-		if not self.expectPeek(token.TokenType.RPAREN):
+		if not self.expectPeek(tstoken.TokenType.RPAREN):
 			return None
-		if not self.expectPeek(token.TokenType.LBRACE):
+		if not self.expectPeek(tstoken.TokenType.LBRACE):
 			return None
 
 		expr.Consequence = self.parseBlockStatement()
-		if self.peekTokenIs(token.TokenType.ELSE):
+		if self.peekTokenIs(tstoken.TokenType.ELSE):
 			self.nextToken()
 
-			if not self.expectPeek(token.LBRACE):
+			if not self.expectPeek(tstoken.LBRACE):
 				return None
 
 			expr.Alternative = self.parseBlockStatement()
@@ -302,7 +302,7 @@ class Parser():
 
 		self.nextToken()
 
-		while not self.curTokenIs(token.TokenType.RBRACE) and not self.curTokenIs(token.TokenType.EOF):
+		while not self.curTokenIs(tstoken.TokenType.RBRACE) and not self.curTokenIs(tstoken.TokenType.EOF):
 			stmt = self.parseStatement()
 			if stmt is not None:
 				block.Statements.append(stmt)
@@ -313,12 +313,12 @@ class Parser():
 	def parseFunctionLiteral(self) -> typing.Optional[ast.Expression]:
 		lit = ast.FunctionLiteral(Token=self.curToken)
 
-		if not self.expectPeek(token.TokenType.LPAREN):
+		if not self.expectPeek(tstoken.TokenType.LPAREN):
 			return None
 
 		lit.Parameters = self.parseFunctionParameters
 
-		if not self.expectPeek(token.TokenType.LBRACE):
+		if not self.expectPeek(tstoken.TokenType.LBRACE):
 			return None
 
 		lit.Body = self.parseBlockStatement()
@@ -326,7 +326,7 @@ class Parser():
 		return lit
 
 	def parseFunctionParameters(self) -> typing.List[ast.Identifier]:
-		if self.peekTokenIs(token.TokenType.RPAREN):
+		if self.peekTokenIs(tstoken.TokenType.RPAREN):
 			self.nextToken()
 			return []
 
@@ -334,22 +334,22 @@ class Parser():
 
 		idents = [ast.Identifier(Value=self.curToken.Literal, Token=self.curToken)]
 
-		while self.peekTokenIs(token.TokenType.COMMA):
+		while self.peekTokenIs(tstoken.TokenType.COMMA):
 			self.nextToken()
 			self.nextToken()
 			idents = [ast.Identifier(Value=self.curToken.Literal, Token=self.curToken)]
 
-		if not self.expectPeek(token.TokenType.RPAREN):
+		if not self.expectPeek(tstoken.TokenType.RPAREN):
 			return None
 
 		return idents
 
 	def parseCallExpression(self, func: ast.Expression) -> ast.Expression:
 		exp = ast.CallExpression(Function=func, Token=self.curToken)
-		exp.Arguments = self.parseExpression(token.TokenType.RPAREN)
+		exp.Arguments = self.parseExpression(tstoken.TokenType.RPAREN)
 		return exp
 
-	def parseExpressionList(self, end: token.TokenType) -> typing.Optional[typing.List[ast.Expression]]:
+	def parseExpressionList(self, end: tstoken.TokenType) -> typing.Optional[typing.List[ast.Expression]]:
 		if self.peekTokenIs(end):
 			self.nextToken()
 			return []
@@ -357,7 +357,7 @@ class Parser():
 		self.nextToken()
 		l = [self.parseExpression(Precedence.LOWEST)]
 
-		while self.peekTokenIs(token.TokenType.COMMA):
+		while self.peekTokenIs(tstoken.TokenType.COMMA):
 			self.nextToken()
 			self.nextToken()
 			l.append(self.parseExpression(Precedence.LOWEST))
@@ -366,7 +366,7 @@ class Parser():
 
 	def parseArrayLiteral(self) -> ast.Expression:
 		arr = ast.ArrayLiteral(Token=self.curToken)
-		arr.Elements = self.parseExpressionList(token.TokenType.RBRACKET)
+		arr.Elements = self.parseExpressionList(tstoken.TokenType.RBRACKET)
 		return arr
 
 	def parseIndexExpression(self, left: ast.Expression) -> typing.Optional[ast.Expression]:
@@ -375,16 +375,16 @@ class Parser():
 		self.nextToken()
 		exp.Index = self.parseExpression(Precedence.LOWEST)
 
-		return exp if self.expectPeek(token.TokenType.RBRACKET) else None
+		return exp if self.expectPeek(tstoken.TokenType.RBRACKET) else None
 
 	def parseHashLiteral(self) -> typing.Optional[ast.Expression]:
 		h = ast.HashLiteral(Token=self.curToken)
 
-		while not self.peekTokenIs(token.TokenType.RBRACE):
+		while not self.peekTokenIs(tstoken.TokenType.RBRACE):
 			self.nextToken()
 			key = self.parseExpression(Precedence.LOWEST)
 
-			if not self.expectPeek(token.TokenType.COLON):
+			if not self.expectPeek(tstoken.TokenType.COLON):
 				return None
 
 			self.nextToken()
@@ -392,10 +392,10 @@ class Parser():
 
 			h.Pairs[key] = v
 
-			if not self.peekTokenIs(token.TokenType.RBRACE) and not self.expectPeek(token.TokenType.COMMA):
+			if not self.peekTokenIs(tstoken.TokenType.RBRACE) and not self.expectPeek(tstoken.TokenType.COMMA):
 				return None
 
-		return h if self.expectPeek(token.TokenType.RBRACE) else None
+		return h if self.expectPeek(tstoken.TokenType.RBRACE) else None
 
 traceLevel = 0
 traceIdentPlaceholder = '\t'

@@ -2,15 +2,15 @@
 
 import typing
 
-from . import token
+from . import tstoken
 
 class Node():
 	pass
 
 class Expression(Node):
-	def __init__(self, *args, Token: token.Token = None, **kwargs):
+	def __init__(self, *args, Token: tstoken.Token = None, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.Token = Token if Token else token.Token()
+		self.Token = Token if Token else tstoken.Token()
 
 	def expressionNode(self):
 		return None
@@ -27,9 +27,9 @@ class Identifier(Expression):
 		return self.Value
 
 class Statement(Node):
-	def __init__(self, *args, Token: token.Token = None, **kwargs):
+	def __init__(self, *args, Token: tstoken.Token = None, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.Token = Token if Token else token.Token()
+		self.Token = Token if Token else tstoken.Token()
 
 	def statementNode(self):
 		return None

@@ -1,4 +1,4 @@
-from . import token
+from . import tstoken
 
 class Lexer():
 	def __init__(self, input: str):
@@ -54,72 +54,72 @@ class Lexer():
 	def isDigit(ch: str) -> bool:
 		return ord('0') <= ord(ch) and ord(ch) <= ord('9')
 
-	def NextToken(self) -> token.Token:
+	def NextToken(self) -> tstoken.Token:
 		self.skipWhitespace()
 
-		tok = token.Token()
+		tok = tstoken.Token()
 		if self.ch == '=':
 			if self.peekChar() == '=':
 				ch = self.ch
 				self.readChar()
 				literal = ch + self.ch
-				tok = token.Token(Type=token.TokenType.EQ, Literal=literal)
+				tok = tstoken.Token(Type=tstoken.TokenType.EQ, Literal=literal)
 			else:
-				tok = newToken(token.TokenType.ASSIGN, self.ch)
+				tok = newToken(tstoken.TokenType.ASSIGN, self.ch)
 		elif self.ch == '+':
-			tok = newToken(token.TokenType.PLUS, self.ch)
+			tok = newToken(tstoken.TokenType.PLUS, self.ch)
 		elif self.ch == '-':
-			tok = newToken(token.TokenType.MINUS, self.ch)
+			tok = newToken(tstoken.TokenType.MINUS, self.ch)
 		elif self.ch == '!':
 			if self.peekChar() == '=':
 				ch = self.ch
 				self.readChar()
 				literal = ch + self.ch
-				tok = token.Token(Type=token.TokenType.NOT_EQ, Literal=literal)
+				tok = tstoken.Token(Type=tstoken.TokenType.NOT_EQ, Literal=literal)
 			else:
-				tok = newToken(token.TokenType.BANG, self.ch)
+				tok = newToken(tstoken.TokenType.BANG, self.ch)
 		elif self.ch == '/':
-			tok = newToken(token.TokenType.SLASH, self.ch)
+			tok = newToken(tstoken.TokenType.SLASH, self.ch)
 		elif self.ch == '*':
-			tok = newToken(token.TokenType.ASTERISK, self.ch)
+			tok = newToken(tstoken.TokenType.ASTERISK, self.ch)
 		elif self.ch == '<':
-			tok = newToken(token.TokenType.LT, self.ch)
+			tok = newToken(tstoken.TokenType.LT, self.ch)
 		elif self.ch == '>':
-			tok = newToken(token.TokenType.GT, self.ch)
+			tok = newToken(tstoken.TokenType.GT, self.ch)
 		elif self.ch == ';':
-			tok = newToken(token.TokenType.SEMICOLON, self.ch)
+			tok = newToken(tstoken.TokenType.SEMICOLON, self.ch)
 		elif self.ch == ':':
-			tok = newToken(token.TokenType.COLON, self.ch)
+			tok = newToken(tstoken.TokenType.COLON, self.ch)
 		elif self.ch == ',':
-			tok = newToken(token.TokenType.COMMA, self.ch)
+			tok = newToken(tstoken.TokenType.COMMA, self.ch)
 		elif self.ch == '{':
-			tok = newToken(token.TokenType.LBRACE, self.ch)
+			tok = newToken(tstoken.TokenType.LBRACE, self.ch)
 		elif self.ch == '}':
-			tok = newToken(token.TokenType.RBRACE, self.ch)
+			tok = newToken(tstoken.TokenType.RBRACE, self.ch)
 		elif self.ch == '(':
-			tok = newToken(token.TokenType.LPAREN, self.ch)
+			tok = newToken(tstoken.TokenType.LPAREN, self.ch)
 		elif self.ch == ')':
-			tok = newToken(token.TokenType.RPAREN, self.ch)
+			tok = newToken(tstoken.TokenType.RPAREN, self.ch)
 		elif self.ch == '"':
-			tok = token.Token(Type=token.TokenType.STRING, Literal=self.readString())
+			tok = tstoken.Token(Type=tstoken.TokenType.STRING, Literal=self.readString())
 		elif self.ch == '[':
-			tok = newToken(token.TokenType.LBRACKET, self.ch)
+			tok = newToken(tstoken.TokenType.LBRACKET, self.ch)
 		elif self.ch == ']':
-			tok = newToken(token.TokenType.RBRACKET, self.ch)
+			tok = newToken(tstoken.TokenType.RBRACKET, self.ch)
 		elif self.ch == str(b'\x00'):
-			tok = token.Token(Type=token.TokenType.EOF, Literal="")
+			tok = tstoken.Token(Type=tstoken.TokenType.EOF, Literal="")
 		else:
 			if self.isLetter(self.ch):
 				lit = self.readIdentifier()
-				return token.Token(Type=token.lookupIdent(lit), Literal=lit)
+				return tstoken.Token(Type=tstoken.lookupIdent(lit), Literal=lit)
 			elif self.isDigit(self.ch):
 				lit = self.readNumber()
-				return token.Token(Type=token.TokenType.INT, Literal=lit)
+				return tstoken.Token(Type=tstoken.TokenType.INT, Literal=lit)
 			else:
-				tok = newToken(token.TokenType.ILLEGAL, self.ch)
+				tok = newToken(tstoken.TokenType.ILLEGAL, self.ch)
 
 		self.readChar()
 		return tok
 
-def newToken(tokenType: token.TokenType, ch: str) -> token.Token:
-	return token.Token(Type=tokenType, Literal=ch)
+def newToken(tstokenType: tstoken.TokenType, ch: str) -> tstoken.Token:
+	return tstoken.Token(Type=tstokenType, Literal=ch)

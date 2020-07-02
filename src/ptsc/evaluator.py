@@ -2,15 +2,15 @@ import typing
 
 from . import ast
 from . import environment
-from . import object as obj
+from . import tsobject
 from . import builtins
 
-NULL = obj.Null()
-UNDEFINED = obj.Object()
-TRUE = obj.Boolean(Value=True)
-FALSE = obj.Boolean(Value=False)
+NULL = tsobject.Null()
+UNDEFINED = tsobject.Object()
+TRUE = tsobject.Boolean(Value=True)
+FALSE = tsobject.Boolean(Value=False)
 
-def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[obj.Object]:
+def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[tsobject.Object]:
 	if isinstance(node, ast.Program):
 		return evalProgram(node, env)
 
@@ -24,7 +24,7 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[obj.Ob
 		val = Eval(node.ReturnValue, env)
 		if isError(val):
 			return val
-		return obj.ReturnValue(Value=val)
+		return tsobject.ReturnValue(Value=val)
 
 	if isinstance(node, ast.LetStatement):
 		val = Eval(node.Value, env)
@@ -33,10 +33,10 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[obj.Ob
 		env.Set(node.Name.Value, val)
 
 	if isinstance(node, ast.IntegerLiteral):
-		return obj.Integer(Value=node.Value)
+		return tsobject.Integer(Value=node.Value)
 
 	if isinstance(node, ast.StringLiteral):
-		return obj.String(Value=node.Value)
+		return tsobject.String(Value=node.Value)
 
 	if isinstance(node, ast.Boolean):
 		return nativeBoolToBooleanObject(node.Value)
@@ -64,7 +64,7 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[obj.Ob
 		return evalIdentifier(node, env)
 
 	if isinstance(node, ast.FunctionLiteral):
-		return obj.Function(Parameters=node.Parameters, Env=env, Body=node.Body)
+		return tsobject.Function(Parameters=node.Parameters, Env=env, Body=node.Body)
 
 	if isinstance(node, ast.CallExpression):
 		fn = Eval(node.Function, env)
@@ -81,7 +81,7 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[obj.Ob
 		elems = evalExpressions(node.Elements, env)
 		if len(elems) == 1 and isError(elems[0]):
 			return elems[0]
-		return obj.Array(Elements=elems)
+		return tsobject.Array(Elements=elems)
 
 	if isinstance(node, ast.IndexExpression):
 		left = Eval(node.Left, env)
@@ -97,45 +97,45 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[obj.Ob
 
 	return None
 
-def evalProgram(program: ast.Program, env: environment.Environment) -> obj.Object:
-	res = obj.Object()
+def evalProgram(program: ast.Program, env: environment.Environment) -> tsobject.Object:
+	res = tsobject.Object()
 
 	for statement in program.Statements:
 		res = Eval(statement, env)
 
-		if isinstance(res, obj.ReturnValue):
+		if isinstance(res, tsobject.ReturnValue):
 			return res.Value
-		if isinstance(res, obj.Error):
+		if isinstance(res, tsobject.Error):
 			return res
 
 	return res
 
-def evalBlockStatement(block: ast.BlockStatement, env: environment.Environment) -> obj.Object:
-	res = obj.Object()
+def evalBlockStatement(block: ast.BlockStatement, env: environment.Environment) -> tsobject.Object:
+	res = tsobject.Object()
 
 	for stmt in block.Statements:
 		res = Eval(stmt, env)
 
 		if res is not None:
-			if res.Type == obj.ObjectType.RETURN_VALUE_OBJ or res.Type == obj.ObjectType.ERROR_OBJ:
+			if res.Type == tsobject.ObjectType.RETURN_VALUE_OBJ or res.Type == tsobject.ObjectType.ERROR_OBJ:
 				return res
 
 	return res
 
-def nativeBoolToBooleanObject(input: bool) -> obj.Boolean:
+def nativeBoolToBooleanObject(input: bool) -> tsobject.Boolean:
 	return TRUE if input else FALSE
 
-def evalPrefixExpression(operator: str, right: obj.Object) -> obj.Object:
+def evalPrefixExpression(operator: str, right: tsobject.Object) -> tsobject.Object:
 	if operator == "!":
 		return evalBangOperatorExpression(right)
 	if operator == "-":
 		return evalMinusPrefixOperatorExpression(right)
 	return newError(f"unknown operator: {operator}{right.Type}")
 
-def evalInfixExpression(operator: str, left: obj.Object, right: obj.Object) -> obj.Object:
-	if left.Type == obj.ObjectType.INTEGER_OBJ and right.Type == obj.ObjectType.INTEGER_OBJ:
+def evalInfixExpression(operator: str, left: tsobject.Object, right: tsobject.Object) -> tsobject.Object:
+	if left.Type == tsobject.ObjectType.INTEGER_OBJ and right.Type == tsobject.ObjectType.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
-	if left.Type == obj.ObjectType.STRING_OBJ and right.Type == obj.ObjectType.STRING_OBJ:
+	if left.Type == tsobject.ObjectType.STRING_OBJ and right.Type == tsobject.ObjectType.STRING_OBJ:
 		return evalStringInfixExpression(operator, left, right)
 	if operator == "==":
 		return nativeBoolToBooleanObject(left == right)
@@ -145,27 +145,27 @@ def evalInfixExpression(operator: str, left: obj.Object, right: obj.Object) -> o
 		return newError(f"type mismatch: {left.Type} {operator} {right.Type}")
 	return newError(f"unknown operator {left.Type} {operator} {right.Type}")
 
-def evalBangOperatorExpression(right: obj.Object) -> obj.Object:
+def evalBangOperatorExpression(right: tsobject.Object) -> tsobject.Object:
 	if right is FALSE or right is NULL:
 		return TRUE
 	return FALSE
 
-def evalMinusPrefixOperatorExpression(right: obj.Object) -> obj.Object:
-	if right.Type != obj.ObjectType.INTEGER_OBJ:
+def evalMinusPrefixOperatorExpression(right: tsobject.Object) -> tsobject.Object:
+	if right.Type != tsobject.ObjectType.INTEGER_OBJ:
 		return newError(f"unknown operator: -{right.Type}")
-	return obj.Integer(Value=-right.Value)
+	return tsobject.Integer(Value=-right.Value)
 
-def evalIntegerInfixExpression(operator: str, left: obj.Object, right: obj.Object) -> obj.Object:
+def evalIntegerInfixExpression(operator: str, left: tsobject.Object, right: tsobject.Object) -> tsobject.Object:
 	lvalue, rvalue = left.Value, right.Value
 
 	if operator == "+":
-		return obj.Integer(Value=lvalue+rvalue)
+		return tsobject.Integer(Value=lvalue+rvalue)
 	if operator == "-":
-		return obj.Integer(Value=lvalue-rvalue)
+		return tsobject.Integer(Value=lvalue-rvalue)
 	if operator == "*":
-		return obj.Integer(Value=lvalue*rvalue)
+		return tsobject.Integer(Value=lvalue*rvalue)
 	if operator == "/":
-		return obj.Integer(Value=lvalue/rvalue)
+		return tsobject.Integer(Value=lvalue/rvalue)
 	if operator == "<":
 		return nativeBoolToBooleanObject(lvalue < rvalue)
 	if operator == ">":
@@ -176,13 +176,13 @@ def evalIntegerInfixExpression(operator: str, left: obj.Object, right: obj.Objec
 		return nativeBoolToBooleanObject(lvalue != rvalue)
 	return newError(f"unknown operator: {left.Type} {operator} {right.Type}")
 
-def evalStringInfixExpression(operator: str, left: obj.Object, right: obj.Object) -> obj.Object:
+def evalStringInfixExpression(operator: str, left: tsobject.Object, right: tsobject.Object) -> tsobject.Object:
 	if operator != "+":
 		return newError(f"unknown operator: {left.Type} {operator} {right.Type}")
 
-	return obj.String(Value=left.Value + right.Value)
+	return tsobject.String(Value=left.Value + right.Value)
 
-def evalIfExpression(ie: ast.IfExpression, env: environment.Environment) -> obj.Object:
+def evalIfExpression(ie: ast.IfExpression, env: environment.Environment) -> tsobject.Object:
 	condition = Eval(ie.Condition)
 	if isError(condition):
 		return condition
@@ -193,27 +193,27 @@ def evalIfExpression(ie: ast.IfExpression, env: environment.Environment) -> obj.
 		return Eval(ie.Alternative, env)
 	return NULL
 
-def evalIdentifier(node: ast.Identifier, env: environment.Environment) -> obj.Object:
+def evalIdentifier(node: ast.Identifier, env: environment.Environment) -> tsobject.Object:
 	val, ok = env.Get(node.Value)
 	if ok:
 		return val
 
 	return builtins.builtins.get(node.Value, newError(f"identifier not found: {node.Value}"))
 
-def isTruthy(o: obj.Object) -> bool:
+def isTruthy(o: tsobject.Object) -> bool:
 	if o is NULL or o is FALSE:
 		return False
 	return True
 
-def newError(msg: str) -> obj.Error:
-	return obj.Error(Message=msg)
+def newError(msg: str) -> tsobject.Error:
+	return tsobject.Error(Message=msg)
 
-def isError(o: obj.Object) -> bool:
+def isError(o: tsobject.Object) -> bool:
 	if o is not None:
-		return o.Type == obj.ObjectType.ERROR_OBJ
+		return o.Type == tsobject.ObjectType.ERROR_OBJ
 	return False
 
-def evalExpressions(exps: typing.List[ast.Expression], env: environment.Environment) -> obj.Object:
+def evalExpressions(exps: typing.List[ast.Expression], env: environment.Environment) -> tsobject.Object:
 	result = []
 	for e in exps:
 		evaluated = Eval(e, env)
@@ -223,47 +223,47 @@ def evalExpressions(exps: typing.List[ast.Expression], env: environment.Environm
 
 	return result
 
-def applyFunction(fn: obj.Object, *args: typing.Tuple[obj.Object]) -> obj.Object:
-	if isinstance(fn, obj.Function):
+def applyFunction(fn: tsobject.Object, *args: typing.Tuple[tsobject.Object]) -> tsobject.Object:
+	if isinstance(fn, tsobject.Function):
 		extendedEnv = extendFunctionEnv(fn, *args)
 		return unwrapReturnValue(Eval(fn.Body, extendedEnv))
 
-	if isinstance(fn, obj.Builtin):
+	if isinstance(fn, tsobject.Builtin):
 		return fn.Fn(*args)
 
 	return newError(f"not a function: {fn.Type}")
 
-def extendFunctionEnv(fn: obj.Function, *args: typing.Tuple[obj.Object]) -> environment.Environment:
+def extendFunctionEnv(fn: tsobject.Function, *args: typing.Tuple[tsobject.Object]) -> environment.Environment:
 	env = environment.Environment(outer=fn.Env)
 	for i, p in range(fn.Parameters):
 		env.Set(p.Value, args[i])
 	return env
 
-def unwrapReturnValue(o: obj.Object) -> obj.Object:
-	if isinstance(o, obj.ReturnValue):
+def unwrapReturnValue(o: tsobject.Object) -> tsobject.Object:
+	if isinstance(o, tsobject.ReturnValue):
 		return o.Value
 	return o
 
-def evalIndexExpression(left: obj.Object, index: obj.Object) -> obj.Object:
-	if left.Type == obj.ObjectType.ARRAY_OBJ and index.Type == obj.ObjectType.INTEGER_OBJ:
+def evalIndexExpression(left: tsobject.Object, index: tsobject.Object) -> tsobject.Object:
+	if left.Type == tsobject.ObjectType.ARRAY_OBJ and index.Type == tsobject.ObjectType.INTEGER_OBJ:
 		return evalArrayIndexExpression(left, index)
-	if left.Type == obj.ObjectType.HASH_OBJ:
+	if left.Type == tsobject.ObjectType.HASH_OBJ:
 		return evalHashIndexExpression(left, index)
 	return newError(f"index operator not supported: {left.Type}")
 
-def evalArrayIndexExpression(arr: obj.Array, index: obj.Integer) -> obj.Object:
+def evalArrayIndexExpression(arr: tsobject.Array, index: tsobject.Integer) -> tsobject.Object:
 	if index < 0 or index > len(arr.Elements) - 1:
 		return NULL
 	return arr.Elements[index]
 
-def evalHashLiteral(node: ast.HashLiteral, env: environment.Environment) -> obj.Object:
+def evalHashLiteral(node: ast.HashLiteral, env: environment.Environment) -> tsobject.Object:
 	pairs = {}
 	for k, v in range(node.Pairs):
 		key = Eval(k, env)
 		if isError(key):
 			return key
 
-		if not isinstance(key, obj.Hashable):
+		if not isinstance(key, tsobject.Hashable):
 			return newError(f"unusable as hash key: {key.Type}")
 
 		value = Eval(v, env)
@@ -271,11 +271,11 @@ def evalHashLiteral(node: ast.HashLiteral, env: environment.Environment) -> obj.
 			return value
 
 		hashed = key.HashKey()
-		pairs[hashed] = obj.HashPair(Key=key, Value=value)
-	return obj.Hash(Pairs=pairs)
+		pairs[hashed] = tsobject.HashPair(Key=key, Value=value)
+	return tsobject.Hash(Pairs=pairs)
 
-def evalHashIndexExpression(hash: obj.Hash, index: obj.Object) -> obj.Object:
-	if not isinstance(index, obj.Hashable):
+def evalHashIndexExpression(hash: tsobject.Hash, index: tsobject.Object) -> tsobject.Object:
+	if not isinstance(index, tsobject.Hashable):
 		return newError(f"unusable as hash key: {index.Type}")
 
 	key = index.HashKey()
