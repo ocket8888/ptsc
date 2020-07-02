@@ -455,6 +455,27 @@ class Parser():
 		1
 		>>> body[0].Expression.Value
 		'x'
+		>>>
+		>>> p = Parser(lexer.Lexer("if(x<y){x;}else{y;};")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> exp = p.Statements[0].Expression
+		>>> exp.Condition.Left.Value
+		'x'
+		>>> exp.Condition.Operator
+		'<'
+		>>> exp.Condition.Right.Value
+		'y'
+		>>> body = exp.Consequence.Statements
+		>>> len(body)
+		1
+		>>> body[0].Expression.Value
+		'x'
+		>>> alt = exp.Alternative.Statements
+		>>> len(alt)
+		1
+		>>> alt[0].Expression.Value
+		'y'
 		"""
 		expr = ast.IfExpression(Token=self.curToken)
 
@@ -473,7 +494,7 @@ class Parser():
 		if self.peekTokenIs(tstoken.TokenType.ELSE):
 			self.nextToken()
 
-			if not self.expectPeek(tstoken.LBRACE):
+			if not self.expectPeek(tstoken.TokenType.LBRACE):
 				return None
 
 			expr.Alternative = self.parseBlockStatement()
