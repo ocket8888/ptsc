@@ -231,7 +231,7 @@ class Parser():
 		>>> p.Statements[0].Expression.TokenLiteral()
 		'5'
 		"""
-		lit = ast.IntegerLiteral(Token=self.curToken.Literal)
+		lit = ast.IntegerLiteral(Token=self.curToken)
 
 		try:
 			value = int(self.curToken.Literal)

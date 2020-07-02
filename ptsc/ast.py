@@ -16,6 +16,14 @@ class Expression(Node):
 		return None
 
 	def TokenLiteral(self) -> str:
+		"""
+		Outputs the literal token string of this expression.
+
+		>>> Expression(Token=tstoken.Token(5, "5")).TokenLiteral()
+		'5'
+		"""
+		if not isinstance(self.Token, tstoken.Token):
+			raise TypeError(f"{self.Token} is not a Token, it's a {type(self.Token)}")
 		return self.Token.Literal
 
 class Identifier(Expression):
