@@ -437,6 +437,25 @@ class Parser():
 		return exp if self.expectPeek(tstoken.TokenType.RPAREN) else None
 
 	def parseIfExpression(self) -> typing.Optional[ast.Expression]:
+		"""
+		Parses a single 'if' expression, e.g. "if (x < y) { x }"
+
+		>>> p = Parser(lexer.Lexer("if (x<y) {x};")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Condition.Left.Value
+		'x'
+		>>> p.Statements[0].Expression.Condition.Operator
+		'<'
+		>>> p.Statements[0].Expression.Condition.Right.Value
+		'y'
+		>>> p.Statements[0].Expression.Alternative
+		>>> body = p.Statements[0].Expression.Consequence.Statements
+		>>> len(body)
+		1
+		>>> body[0].Expression.Value
+		'x'
+		"""
 		expr = ast.IfExpression(Token=self.curToken)
 
 		if not self.expectPeek(tstoken.TokenType.LPAREN):
