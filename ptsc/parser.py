@@ -305,6 +305,109 @@ class Parser():
 		return expr
 
 	def parseInfixExpression(self, left: ast.Expression) -> ast.Expression:
+		"""
+		Parses a single infix-operator expression, e.g. "5+5;"
+
+		>>> p = Parser(lexer.Lexer("5+5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'+'
+		>>> p.Statements[0].Expression.Left.Value
+		5
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("5-5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'-'
+		>>> p.Statements[0].Expression.Left.Value
+		5
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("5*5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'*'
+		>>> p.Statements[0].Expression.Left.Value
+		5
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("5/5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'/'
+		>>> p.Statements[0].Expression.Left.Value
+		5
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("5>5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'>'
+		>>> p.Statements[0].Expression.Left.Value
+		5
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("5<5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'<'
+		>>> p.Statements[0].Expression.Left.Value
+		5
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("5==5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'=='
+		>>> p.Statements[0].Expression.Left.Value
+		5
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("5!=5;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'!='
+		>>> p.Statements[0].Expression.Left.Value
+		5
+		>>> p.Statements[0].Expression.Right.Value
+		5
+		>>> p = Parser(lexer.Lexer("true==true;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'=='
+		>>> p.Statements[0].Expression.Left.Value
+		True
+		>>> p.Statements[0].Expression.Right.Value
+		True
+		>>> p = Parser(lexer.Lexer("true!=false;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'!='
+		>>> p.Statements[0].Expression.Left.Value
+		True
+		>>> p.Statements[0].Expression.Right.Value
+		False
+		>>> p = Parser(lexer.Lexer("false==false;")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Operator
+		'=='
+		>>> p.Statements[0].Expression.Left.Value
+		False
+		>>> p.Statements[0].Expression.Right.Value
+		False
+		"""
 		expr = ast.InfixExpression(Left=left, Operator=self.curToken.Literal, Token=self.curToken)
 
 		precedence = self.curPrecedence()
