@@ -2,3 +2,5 @@ _pycache_
 *.pyc
 *.ts
 *.js
+*.sublime-*
+*.egg-info
