@@ -11,7 +11,7 @@ class Environment():
 		Retrieves an object from the environment.
 		"""
 		if name in self.store:
-			return name, True
+			return self.store[name], True
 		if self.outer:
 			return self.outer.Get(name)
 		return None, False
