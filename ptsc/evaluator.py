@@ -4,6 +4,7 @@ from . import ast
 from . import environment
 from . import tsobject
 from . import builtins
+from . import parser, lexer
 
 NULL = tsobject.Null()
 UNDEFINED = tsobject.Object()
@@ -101,7 +102,6 @@ def evalProgram(program: ast.Program, env: environment.Environment) -> tsobject.
 	"""
 	Evaluates an entire program, with a given environment.
 
-	>>> from . import parser, lexer
 	>>> evalProgram(parser.Parser(lexer.Lexer("5;")).ParseProgram(), environment.Environment()).Value
 	5
 	>>> evalProgram(parser.Parser(lexer.Lexer("10;")).ParseProgram(), environment.Environment()).Value
@@ -158,6 +158,14 @@ def evalBlockStatement(block: ast.BlockStatement, env: environment.Environment) 
 	return res
 
 def nativeBoolToBooleanObject(input: bool) -> tsobject.Boolean:
+	"""
+	Converts a native boolean to the REPL's boolean object.
+
+	>>> evalProgram(parser.Parser(lexer.Lexer("true;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("false;")).ParseProgram(), environment.Environment()).Value
+	False
+	"""
 	return TRUE if input else FALSE
 
 def evalPrefixExpression(operator: str, right: tsobject.Object) -> tsobject.Object:
