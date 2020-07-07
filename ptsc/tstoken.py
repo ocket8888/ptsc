@@ -45,6 +45,9 @@ class Token:
 		self.Type = Type
 		self.Literal = Literal
 
+	def __repr__(self) -> str:
+		return f"Token(Type='{self.Type}', Literal='{self.Literal}')"
+
 keywords = {
 	"function": TokenType.FUNCTION,
 	"let": TokenType.LET,
