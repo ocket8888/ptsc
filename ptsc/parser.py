@@ -687,6 +687,28 @@ class Parser():
 		return arr
 
 	def parseIndexExpression(self, left: ast.Expression) -> typing.Optional[ast.Expression]:
+		"""
+		Parses a single array index expression, e.g. 'arr[1+1]'.
+
+		>>> p = Parser(lexer.Lexer("arr[1+1];")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Left.Value
+		'arr'
+		>>> p.Statements[0].Expression.Left.TokenLiteral()
+		'arr'
+		>>> exp = p.Statements[0].Expression.Index
+		>>> exp.Left.Value
+		1
+		>>> exp.Left.TokenLiteral()
+		'1'
+		>>> exp.Operator
+		'+'
+		>>> exp.Right.Value
+		1
+		>>> exp.Right.TokenLiteral()
+		'1'
+		"""
 		exp = ast.IndexExpression(Left=left, Token=self.curToken)
 
 		self.nextToken()
