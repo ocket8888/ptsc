@@ -515,12 +515,33 @@ class Parser():
 		return block
 
 	def parseFunctionLiteral(self) -> typing.Optional[ast.Expression]:
+		"""
+		Parses a single literal function expression, e.g. "function(x,y) {x+y;}"
+
+		>>> p = Parser(lexer.Lexer("function(x,y) {x+y}")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> len(p.Statements[0].Expression.Parameters)
+		2
+		>>> p.Statements[0].Expression.Parameters[0].Value
+		'x'
+		>>> p.Statements[0].Expression.Parameters[1].Value
+		'y'
+		>>> len(p.Statements[0].Expression.Body.Statements)
+		1
+		>>> p.Statements[0].Expression.Body.Statements[0].Expression.Operator
+		'+'
+		>>> p.Statements[0].Expression.Body.Statements[0].Expression.Left.Value
+		'x'
+		>>> p.Statements[0].Expression.Body.Statements[0].Expression.Right.Value
+		'y'
+		"""
 		lit = ast.FunctionLiteral(Token=self.curToken)
 
 		if not self.expectPeek(tstoken.TokenType.LPAREN):
 			return None
 
-		lit.Parameters = self.parseFunctionParameters
+		lit.Parameters = self.parseFunctionParameters()
 
 		if not self.expectPeek(tstoken.TokenType.LBRACE):
 			return None
@@ -530,6 +551,9 @@ class Parser():
 		return lit
 
 	def parseFunctionParameters(self) -> typing.List[ast.Identifier]:
+		"""
+		Parses function parameter expressions.
+		"""
 		if self.peekTokenIs(tstoken.TokenType.RPAREN):
 			self.nextToken()
 			return []
@@ -537,11 +561,10 @@ class Parser():
 		self.nextToken()
 
 		idents = [ast.Identifier(Value=self.curToken.Literal, Token=self.curToken)]
-
 		while self.peekTokenIs(tstoken.TokenType.COMMA):
 			self.nextToken()
 			self.nextToken()
-			idents = [ast.Identifier(Value=self.curToken.Literal, Token=self.curToken)]
+			idents.append(ast.Identifier(Value=self.curToken.Literal, Token=self.curToken))
 
 		if not self.expectPeek(tstoken.TokenType.RPAREN):
 			return None
@@ -549,8 +572,21 @@ class Parser():
 		return idents
 
 	def parseCallExpression(self, func: ast.Expression) -> ast.Expression:
+		"""
+		Parses a single function call expression, e.g. "encodeURIComponent(x)"
+
+		>>> p = Parser(lexer.Lexer("add(1, 2*3, 4+5);")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Function.Value
+		'add'
+		>>> len(p.Statements[0].Expression.Arguments)
+		3
+		>>> p.Statements[0].Expression.Arguments[0].Value
+		1
+		"""
 		exp = ast.CallExpression(Function=func, Token=self.curToken)
-		exp.Arguments = self.parseExpression(tstoken.TokenType.RPAREN)
+		exp.Arguments = self.parseExpressionList(tstoken.TokenType.RPAREN)
 		return exp
 
 	def parseExpressionList(self, end: tstoken.TokenType) -> typing.Optional[typing.List[ast.Expression]]:
