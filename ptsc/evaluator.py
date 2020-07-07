@@ -1,3 +1,16 @@
+"""
+This package contains the evaluator logic for the language.
+
+>>> TRUE.Inspect()
+'true'
+>>> FALSE.Inspect()
+'false'
+>>> NULL.Inspect()
+'null'
+>>> UNDEFINED.Inspect()
+'undefined'
+"""
+
 import typing
 
 from . import ast

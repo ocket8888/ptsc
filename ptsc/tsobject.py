@@ -51,7 +51,7 @@ class Boolean(Object):
 		self.Value = Value
 
 	def Inspect(self) -> str:
-		return str(self.Value)
+		return str(self.Value).lower()
 
 	def HashKey(self) -> HashKey:
 		if self.Value:
