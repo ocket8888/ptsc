@@ -611,10 +611,23 @@ class Parser():
 		1
 		>>> p.Statements[0].Expression.Function.Value
 		'add'
-		>>> len(p.Statements[0].Expression.Arguments)
+		>>> args = p.Statements[0].Expression.Arguments
+		>>> len(args)
 		3
-		>>> p.Statements[0].Expression.Arguments[0].Value
+		>>> args[0].Value
 		1
+		>>> args[1].Left.Value
+		2
+		>>> args[1].Operator
+		'*'
+		>>> args[1].Right.Value
+		3
+		>>> args[2].Left.Value
+		4
+		>>> args[2].Operator
+		'+'
+		>>> args[2].Right.Value
+		5
 		"""
 		exp = ast.CallExpression(Function=func, Token=self.curToken)
 		exp.Arguments = self.parseExpressionList(tstoken.TokenType.RPAREN)
