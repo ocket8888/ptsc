@@ -98,6 +98,41 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[tsobje
 	return None
 
 def evalProgram(program: ast.Program, env: environment.Environment) -> tsobject.Object:
+	"""
+	Evaluates an entire program, with a given environment.
+
+	>>> from . import parser, lexer
+	>>> evalProgram(parser.Parser(lexer.Lexer("5;")).ParseProgram(), environment.Environment()).Value
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer("10;")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("-5;")).ParseProgram(), environment.Environment()).Value
+	-5
+	>>> evalProgram(parser.Parser(lexer.Lexer("-10;")).ParseProgram(), environment.Environment()).Value
+	-10
+	>>> evalProgram(parser.Parser(lexer.Lexer("5+5+5+5-10;")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("2*2*2*2*2;")).ParseProgram(), environment.Environment()).Value
+	32
+	>>> evalProgram(parser.Parser(lexer.Lexer("-50+100+-50;")).ParseProgram(), environment.Environment()).Value
+	0
+	>>> evalProgram(parser.Parser(lexer.Lexer("5*2 + 10;")).ParseProgram(), environment.Environment()).Value
+	20
+	>>> evalProgram(parser.Parser(lexer.Lexer("5+2*10;")).ParseProgram(), environment.Environment()).Value
+	25
+	>>> evalProgram(parser.Parser(lexer.Lexer("20+2*-10;")).ParseProgram(), environment.Environment()).Value
+	0
+	>>> evalProgram(parser.Parser(lexer.Lexer("50/2*2+10;")).ParseProgram(), environment.Environment()).Value
+	60.0
+	>>> evalProgram(parser.Parser(lexer.Lexer("2*(5+10);")).ParseProgram(), environment.Environment()).Value
+	30
+	>>> evalProgram(parser.Parser(lexer.Lexer("3*3*3+10;")).ParseProgram(), environment.Environment()).Value
+	37
+	>>> evalProgram(parser.Parser(lexer.Lexer("3*(3*3)+10;")).ParseProgram(), environment.Environment()).Value
+	37
+	>>> evalProgram(parser.Parser(lexer.Lexer("(5+10*2+15/3)*2+-10;")).ParseProgram(), environment.Environment()).Value
+	50.0
+	"""
 	res = tsobject.Object()
 
 	for statement in program.Statements:
