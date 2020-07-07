@@ -717,6 +717,22 @@ class Parser():
 		return exp if self.expectPeek(tstoken.TokenType.RBRACKET) else None
 
 	def parseHashLiteral(self) -> typing.Optional[ast.Expression]:
+		"""
+		Parses a single object literal expression, e.g. '{"one":1, "two":2, "three": 3}'
+
+		>>> p = Parser(lexer.Lexer('{"one": 1, "two": 2, "three": 3};')).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> pairs = p.Statements[0].Expression.Pairs
+		>>> len(pairs)
+		3
+		>>> for k, v in pairs.items():
+		... 	print(k.Value,v.Value)
+		...
+		one 1
+		two 2
+		three 3
+		"""
 		h = ast.HashLiteral(Token=self.curToken)
 
 		while not self.peekTokenIs(tstoken.TokenType.RBRACE):

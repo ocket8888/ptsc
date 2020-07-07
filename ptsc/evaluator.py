@@ -258,7 +258,7 @@ def evalArrayIndexExpression(arr: tsobject.Array, index: tsobject.Integer) -> ts
 
 def evalHashLiteral(node: ast.HashLiteral, env: environment.Environment) -> tsobject.Object:
 	pairs = {}
-	for k, v in range(node.Pairs):
+	for k, v in node.Pairs:
 		key = Eval(k, env)
 		if isError(key):
 			return key
