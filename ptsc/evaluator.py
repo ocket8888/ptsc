@@ -182,6 +182,22 @@ def nativeBoolToBooleanObject(input: bool) -> tsobject.Boolean:
 	return TRUE if input else FALSE
 
 def evalPrefixExpression(operator: str, right: tsobject.Object) -> tsobject.Object:
+	"""
+	Evaluates prefix expressions, e.g. '!true;'
+
+	>>> evalProgram(parser.Parser(lexer.Lexer("!true;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("!false;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("!5;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("!!true;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("!!false;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("!!5;")).ParseProgram(), environment.Environment()).Value
+	True
+	"""
 	if operator == "!":
 		return evalBangOperatorExpression(right)
 	if operator == "-":
