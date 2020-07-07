@@ -553,6 +553,37 @@ class Parser():
 	def parseFunctionParameters(self) -> typing.List[ast.Identifier]:
 		"""
 		Parses function parameter expressions.
+
+		>>> p = Parser(lexer.Lexer("function() {}")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> len(p.Statements[0].Expression.Parameters)
+		0
+		>>> p.Statements[0].Expression.TokenLiteral()
+		'function'
+		>>> p = Parser(lexer.Lexer("function(x) {}")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> len(p.Statements[0].Expression.Parameters)
+		1
+		>>> p.Statements[0].Expression.TokenLiteral()
+		'function'
+		>>> p.Statements[0].Expression.Parameters[0].Value
+		'x'
+		>>> p = Parser(lexer.Lexer("function(x, y, z) {}")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> params = p.Statements[0].Expression.Parameters
+		>>> len(params)
+		3
+		>>> p.Statements[0].Expression.TokenLiteral()
+		'function'
+		>>> params[0].Value
+		'x'
+		>>> params[1].Value
+		'y'
+		>>> params[2].Value
+		'z'
 		"""
 		if self.peekTokenIs(tstoken.TokenType.RPAREN):
 			self.nextToken()
