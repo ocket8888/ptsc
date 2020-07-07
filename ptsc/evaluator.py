@@ -25,6 +25,20 @@ TRUE = tsobject.Boolean(Value=True)
 FALSE = tsobject.Boolean(Value=False)
 
 def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[tsobject.Object]:
+	"""
+	Evaluates any kind of node, based on its type.
+
+	>>> evalProgram(parser.Parser(lexer.Lexer("return 10;")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("return 10; 9;")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("return 2*5; 9;")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("9; return 2*5; 9;")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("if (10>1) {if (10>1) {return 10;}; return 1;}")).ParseProgram(), environment.Environment()).Value
+	10
+	"""
 	if isinstance(node, ast.Program):
 		return evalProgram(node, env)
 
