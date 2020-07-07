@@ -293,7 +293,25 @@ def evalStringInfixExpression(operator: str, left: tsobject.Object, right: tsobj
 	return tsobject.String(Value=left.Value + right.Value)
 
 def evalIfExpression(ie: ast.IfExpression, env: environment.Environment) -> tsobject.Object:
-	condition = Eval(ie.Condition)
+	"""
+	Evaluates conditionals, e.g. "if (x) {y()} else {z = z + 1;}"
+
+	>>> evalProgram(parser.Parser(lexer.Lexer("if (true) {10}")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("if (false) {10}")).ParseProgram(), environment.Environment())
+	null
+	>>> evalProgram(parser.Parser(lexer.Lexer("if (1) {10}")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("if (1<2) {10};")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("if (1>2) {10};")).ParseProgram(), environment.Environment())
+	null
+	>>> evalProgram(parser.Parser(lexer.Lexer("if (1>2) {10} else {20}")).ParseProgram(), environment.Environment()).Value
+	20
+	>>> evalProgram(parser.Parser(lexer.Lexer("if (1<2) {10} else {20};")).ParseProgram(), environment.Environment()).Value
+	10
+	"""
+	condition = Eval(ie.Condition, env)
 	if isError(condition):
 		return condition
 

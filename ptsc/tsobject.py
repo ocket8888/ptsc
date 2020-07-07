@@ -28,6 +28,9 @@ class Object():
 	def Inspect(self) -> str:
 		return "undefined"
 
+	def __repr__(self) -> str:
+		return "undefined"
+
 class HashKey():
 	def __init__(self, *args, Type: ObjectType = ObjectType.UNDEFINED_OBJ, Value: int = 0, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -63,6 +66,9 @@ class Null(Object):
 		super().__init__(*args, Type=ObjectType.NULL_OBJ, **kwargs)
 
 	def Inspect(self) -> str:
+		return "null"
+
+	def __repr__(self) -> str:
 		return "null"
 
 class ReturnValue(Object):
