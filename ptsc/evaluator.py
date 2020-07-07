@@ -38,6 +38,14 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[tsobje
 	10
 	>>> evalProgram(parser.Parser(lexer.Lexer("if (10>1) {if (10>1) {return 10;}; return 1;}")).ParseProgram(), environment.Environment()).Value
 	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("let a = 5; a;")).ParseProgram(), environment.Environment()).Value
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer("let a = 5*5; a;")).ParseProgram(), environment.Environment()).Value
+	25
+	>>> evalProgram(parser.Parser(lexer.Lexer("let a = 5; let b = a; b;")).ParseProgram(), environment.Environment()).Value
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer("let a = 5; let b = a; let c = a + b + 5; c;")).ParseProgram(), environment.Environment()).Value
+	15
 	"""
 	if isinstance(node, ast.Program):
 		return evalProgram(node, env)
@@ -159,6 +167,8 @@ def evalProgram(program: ast.Program, env: environment.Environment) -> tsobject.
 	37
 	>>> evalProgram(parser.Parser(lexer.Lexer("(5+10*2+15/3)*2+-10;")).ParseProgram(), environment.Environment()).Value
 	50.0
+	>>> evalProgram(parser.Parser(lexer.Lexer("")).ParseProgram(), environment.Environment())
+	undefined
 	"""
 	res = tsobject.Object()
 
