@@ -261,6 +261,15 @@ class Parser():
 		return lit
 
 	def parseStringLiteral(self) -> ast.Expression:
+		"""
+		Parses a single string literal, e.g. 'hello world'.
+
+		>>> p = Parser(lexer.Lexer('"hello world";')).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> p.Statements[0].Expression.Value
+		'hello world'
+		"""
 		return ast.StringLiteral(Value=self.curToken.Literal, Token=self.curToken)
 
 	def parsePrefixExpression(self) -> ast.Expression:
