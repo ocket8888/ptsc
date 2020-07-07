@@ -732,6 +732,23 @@ class Parser():
 		one 1
 		two 2
 		three 3
+		>>> p = Parser(lexer.Lexer("{}")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> len(p.Statements[0].Expression.Pairs)
+		0
+		>>> p = Parser(lexer.Lexer('{"one": 0+1, "two": 10-8, "three": 15/5}')).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> pairs = p.Statements[0].Expression.Pairs
+		>>> len(pairs)
+		3
+		>>> for k, v in pairs.items():
+		... 	print(k.Value, v.Left.Value, v.Operator, v.Right.Value)
+		...
+		one 0 + 1
+		two 10 - 8
+		three 15 / 5
 		"""
 		h = ast.HashLiteral(Token=self.curToken)
 
