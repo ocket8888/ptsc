@@ -658,6 +658,30 @@ class Parser():
 		return l if self.expectPeek(end) else None
 
 	def parseArrayLiteral(self) -> ast.Expression:
+		"""
+		Parses a single array literal, e.g. '[1,2*2,3+3]'
+
+		>>> p = Parser(lexer.Lexer("[1,2*2,3+3];")).ParseProgram()
+		>>> len(p.Statements)
+		1
+		>>> arr = p.Statements[0].Expression.Elements
+		>>> len(arr)
+		3
+		>>> arr[0].Value
+		1
+		>>> arr[1].Left.Value
+		2
+		>>> arr[1].Operator
+		'*'
+		>>> arr[1].Right.Value
+		2
+		>>> arr[2].Left.Value
+		3
+		>>> arr[2].Operator
+		'+'
+		>>> arr[2].Right.Value
+		3
+		"""
 		arr = ast.ArrayLiteral(Token=self.curToken)
 		arr.Elements = self.parseExpressionList(tstoken.TokenType.RBRACKET)
 		return arr
