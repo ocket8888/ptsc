@@ -189,6 +189,44 @@ def evalPrefixExpression(operator: str, right: tsobject.Object) -> tsobject.Obje
 	return newError(f"unknown operator: {operator}{right.Type}")
 
 def evalInfixExpression(operator: str, left: tsobject.Object, right: tsobject.Object) -> tsobject.Object:
+	"""
+	Evaluates an infix expression.
+
+	>>> evalProgram(parser.Parser(lexer.Lexer("1<2;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("1>2;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("1<1;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("1>1;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("1 == 1;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("1 != 1;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("1 == 2;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("1 != 2;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("true == true;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("false == false;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("true == false;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("true != false;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("false != true;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("(1 < 2) == true;")).ParseProgram(), environment.Environment()).Value
+	True
+	>>> evalProgram(parser.Parser(lexer.Lexer("(1 < 2) == false;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("(1 > 2) == true;")).ParseProgram(), environment.Environment()).Value
+	False
+	>>> evalProgram(parser.Parser(lexer.Lexer("(1 > 2) == false;")).ParseProgram(), environment.Environment()).Value
+	True
+	"""
 	if left.Type == tsobject.ObjectType.INTEGER_OBJ and right.Type == tsobject.ObjectType.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
 	if left.Type == tsobject.ObjectType.STRING_OBJ and right.Type == tsobject.ObjectType.STRING_OBJ:
