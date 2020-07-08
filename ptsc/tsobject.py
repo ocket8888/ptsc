@@ -97,7 +97,7 @@ class Function(Object):
 	def Inspect(self) -> str:
 		return f"function({', '.join(str(p) for p in self.Parameters)}) {{\n{self.Body}\n}}"
 
-def String(Object):
+class String(Object):
 	def __init__(self, *args, Value: str = "", **kwargs):
 		super().__init__(*args, Type=ObjectType.STRING_OBJ, **kwargs)
 		self.Value = Value
@@ -108,7 +108,7 @@ def String(Object):
 	def HashKey(self) -> HashKey:
 		return hash(self.Value)
 
-def Builtin(Object):
+class Builtin(Object):
 	def __init__(self, *args, Fn: BuiltinFunction = None, **kwargs):
 		super().__init__(*args, Type=ObjectType.BUILTIN_OBJ, **kwargs)
 		self.Fn = Fn if Fn else BuiltinFunction()
