@@ -414,6 +414,14 @@ def applyFunction(fn: tsobject.Object, *args: typing.Tuple[tsobject.Object]) -> 
 	return newError(f"not a function: {fn.Type}")
 
 def extendFunctionEnv(fn: tsobject.Function, *args: typing.Tuple[tsobject.Object]) -> environment.Environment:
+	"""
+	Extends the execution environment of a function by adding its defined arguments to their
+	specified parameter labels.
+
+	>>> input = "let newAdder = function(x){return function(y){return x+y;};}; let addTwo=newAdder(2); addTwo(2);"
+	>>> evalProgram(parser.Parser(lexer.Lexer(input)).ParseProgram(), environment.Environment()).Value
+	4
+	"""
 	if len(args) != len(fn.Parameters):
 		raise ValueError(f"Incorrect number of arguments, expected {len(fn.Parameters)}, got {len(args)}")
 	env = environment.Environment(outer=fn.Env)
