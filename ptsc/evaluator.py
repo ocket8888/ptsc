@@ -320,6 +320,12 @@ def evalIntegerInfixExpression(operator: str, left: tsobject.Object, right: tsob
 	return newError(f"unknown operator: {left.Type} {operator} {right.Type}")
 
 def evalStringInfixExpression(operator: str, left: tsobject.Object, right: tsobject.Object) -> tsobject.Object:
+	"""
+	Evaluates a string infix expression, e.g. '"Hello "+"World!"'
+
+	>>> evalProgram(parser.Parser(lexer.Lexer('"Hello "+"World!"')).ParseProgram(), environment.Environment()).Value
+	'Hello World!'
+	"""
 	if operator != "+":
 		return newError(f"unknown operator: {left.Type} {operator} {right.Type}")
 
