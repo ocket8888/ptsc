@@ -29,7 +29,7 @@ class Object():
 		return "undefined"
 
 	def __repr__(self) -> str:
-		return "undefined"
+		return self.Inspect()
 
 class HashKey():
 	def __init__(self, *args, Type: ObjectType = ObjectType.UNDEFINED_OBJ, Value: int = 0, **kwargs):

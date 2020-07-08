@@ -118,7 +118,7 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[tsobje
 		if len(args) == 1 and isError(args[0]):
 			return args[0]
 
-		return applyFunction(fn, args)
+		return applyFunction(fn, *args)
 
 	if isinstance(node, ast.ArrayLiteral):
 		elems = evalExpressions(node.Elements, env)
@@ -355,6 +355,8 @@ def evalIfExpression(ie: ast.IfExpression, env: environment.Environment) -> tsob
 def evalIdentifier(node: ast.Identifier, env: environment.Environment) -> tsobject.Object:
 	val, ok = env.Get(node.Value)
 	if ok:
+		if not isinstance(val, tsobject.Object):
+			raise TypeError("ayy, what?")
 		return val
 
 	return builtins.builtins.get(node.Value, newError(f"identifier not found: {node.Value}"))
@@ -383,9 +385,28 @@ def evalExpressions(exps: typing.List[ast.Expression], env: environment.Environm
 	return result
 
 def applyFunction(fn: tsobject.Object, *args: typing.Tuple[tsobject.Object]) -> tsobject.Object:
+	"""
+	Applies a function to its arguments.
+
+	>>> evalProgram(parser.Parser(lexer.Lexer("let identity = function(x){x;}; identity(5);")).ParseProgram(), environment.Environment()).Value
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer("let identity = function(x){return x;}; identity(5);")).ParseProgram(), environment.Environment()).Value
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer("let double = function(x){return x*2;}; double(5);")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("let add = function(x, y){return x+y;}; add(5, 5);")).ParseProgram(), environment.Environment()).Value
+	10
+	>>> evalProgram(parser.Parser(lexer.Lexer("let add = function(x, y){return x+y;}; add(5+5, add(5,5));")).ParseProgram(), environment.Environment()).Value
+	20
+	>>> evalProgram(parser.Parser(lexer.Lexer("function(x){x;}(5);")).ParseProgram(), environment.Environment()).Value
+	5
+	"""
 	if isinstance(fn, tsobject.Function):
-		extendedEnv = extendFunctionEnv(fn, *args)
-		return unwrapReturnValue(Eval(fn.Body, extendedEnv))
+		try:
+			extendedEnv = extendFunctionEnv(fn, *args)
+			return unwrapReturnValue(Eval(fn.Body, extendedEnv))
+		except ValueError as e:
+			return newError(str(e))
 
 	if isinstance(fn, tsobject.Builtin):
 		return fn.Fn(*args)
@@ -393,8 +414,10 @@ def applyFunction(fn: tsobject.Object, *args: typing.Tuple[tsobject.Object]) -> 
 	return newError(f"not a function: {fn.Type}")
 
 def extendFunctionEnv(fn: tsobject.Function, *args: typing.Tuple[tsobject.Object]) -> environment.Environment:
+	if len(args) != len(fn.Parameters):
+		raise ValueError(f"Incorrect number of arguments, expected {len(fn.Parameters)}, got {len(args)}")
 	env = environment.Environment(outer=fn.Env)
-	for i, p in range(fn.Parameters):
+	for i, p in enumerate(fn.Parameters):
 		env.Set(p.Value, args[i])
 	return env
 
