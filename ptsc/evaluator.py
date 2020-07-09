@@ -585,7 +585,25 @@ def evalHashLiteral(node: ast.HashLiteral, env: environment.Environment) -> tsob
 	return tsobject.Hash(Pairs=pairs)
 
 def evalHashIndexExpression(hash: tsobject.Hash, index: tsobject.Object) -> tsobject.Object:
-	if not isinstance(index, tsobject.Hashable):
+	"""
+	Evaluates an object index expression.
+
+	>>> evalProgram(parser.Parser(lexer.Lexer('{"foo":5}["foo"]')).ParseProgram(), environment.Environment())
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer('{"foo":5}["bar"]')).ParseProgram(), environment.Environment())
+	undefined
+	>>> evalProgram(parser.Parser(lexer.Lexer('let key="foo"; {"foo":5}[key]')).ParseProgram(), environment.Environment())
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer('{}["foo"]')).ParseProgram(), environment.Environment())
+	undefined
+	>>> evalProgram(parser.Parser(lexer.Lexer('{5:5}[5]')).ParseProgram(), environment.Environment())
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer('{true:5}[true]')).ParseProgram(), environment.Environment())
+	5
+	>>> evalProgram(parser.Parser(lexer.Lexer('{false:5}[false]')).ParseProgram(), environment.Environment())
+	5
+	"""
+	if not hasattr(index, "HashKey"):
 		return newError(f"unusable as hash key: {index.Type}")
 
 	key = index.HashKey()

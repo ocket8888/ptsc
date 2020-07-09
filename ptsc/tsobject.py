@@ -49,7 +49,7 @@ class Integer(Object):
 		return str(self.Value)
 
 	def HashKey(self) -> HashKey:
-		return HashKey(Type=ObjectType.INTEGER_OBJ, Value=abs(self.Value))
+		return self.Value
 
 class Boolean(Object):
 	def __init__(self, *args, Value: bool = False, **kwargs):
@@ -60,9 +60,7 @@ class Boolean(Object):
 		return str(self.Value).lower()
 
 	def HashKey(self) -> HashKey:
-		if self.Value:
-			return HashKey(Type=ObjectType.BOOLEAN_OBJ, Value=1)
-		return HashKey(Type=ObjectType.BOOLEAN_OBJ, Value=0)
+		return hash(self.Value)
 
 class Null(Object):
 	def __init__(self, *args, **kwargs):
