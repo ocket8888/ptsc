@@ -424,6 +424,18 @@ def applyFunction(fn: tsobject.Object, *args: typing.Tuple[tsobject.Object]) -> 
 	3
 	>>> evalProgram(parser.Parser(lexer.Lexer('len([0])')).ParseProgram(), environment.Environment())
 	1
+	>>> evalProgram(parser.Parser(lexer.Lexer('first([1, 2, 3])')).ParseProgram(), environment.Environment())
+	1
+	>>> evalProgram(parser.Parser(lexer.Lexer('first([3, 2, 1])')).ParseProgram(), environment.Environment())
+	3
+	>>> evalProgram(parser.Parser(lexer.Lexer('first([0])')).ParseProgram(), environment.Environment())
+	0
+	>>> evalProgram(parser.Parser(lexer.Lexer('first([])')).ParseProgram(), environment.Environment())
+	undefined
+	>>> evalProgram(parser.Parser(lexer.Lexer('first([1, 2, 3], [])')).ParseProgram(), environment.Environment())
+	ERROR: wrong number of arguments. got=2, want=1
+	>>> evalProgram(parser.Parser(lexer.Lexer('first(1)')).ParseProgram(), environment.Environment())
+	ERROR: argument to `first` must be ARRAY, got INTEGER
 	"""
 	if isinstance(fn, tsobject.Function):
 		try:
