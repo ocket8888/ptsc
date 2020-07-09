@@ -1,4 +1,15 @@
 #!/bin/python
+"""
+This module contains the abstract syntax tree node definitions.
+
+>>> name = Identifier(Value="myVar", Token=tstoken.Token(Type=tstoken.TokenType.IDENT, Literal="myVar"))
+>>> val = Identifier(Value="anotherVar", Token=tstoken.Token(Type=tstoken.TokenType.IDENT, Literal="anotherVar"))
+>>> tok = tstoken.Token(Type=tstoken.TokenType.LET, Literal="let")
+>>> stmts = [LetStatement(Token=tok, Name=name, Value=val)]
+>>> p = Program(Statements=stmts)
+>>> str(p)
+'let myVar = anotherVar;'
+"""
 
 import typing
 
@@ -59,7 +70,7 @@ class Program():
 		return ""
 
 	def __str__(self) -> str:
-		return "".join(self.Statements)
+		return "".join(str(s) for s in self.Statements)
 
 #### STATEMENTS ####
 class LetStatement(Statement):
