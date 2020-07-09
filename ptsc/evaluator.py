@@ -295,7 +295,7 @@ def evalInfixExpression(operator: str, left: tsobject.Object, right: tsobject.Ob
 		return nativeBoolToBooleanObject(left != right)
 	if left.Type != right.Type:
 		return newError(f"type mismatch: {left.Type} {operator} {right.Type}")
-	return newError(f"unknown operator {left.Type} {operator} {right.Type}")
+	return newError(f"unknown operator: {left.Type} {operator} {right.Type}")
 
 def evalBangOperatorExpression(right: tsobject.Object) -> tsobject.Object:
 	if right is FALSE or right is NULL:
@@ -379,11 +379,35 @@ def evalIdentifier(node: ast.Identifier, env: environment.Environment) -> tsobje
 	return builtins.builtins.get(node.Value, newError(f"identifier not found: {node.Value}"))
 
 def isTruthy(o: tsobject.Object) -> bool:
-	if o is NULL or o is FALSE:
+	if o is NULL or o is FALSE or o is UNDEFINED:
 		return False
 	return True
 
 def newError(msg: str) -> tsobject.Error:
+	"""
+	Constructs a new error object with the given message.
+
+	>>> evalProgram(parser.Parser(lexer.Lexer('5+true;')).ParseProgram(), environment.Environment())
+	ERROR: type mismatch: INTEGER + BOOLEAN
+	>>> evalProgram(parser.Parser(lexer.Lexer('5+true; 5;')).ParseProgram(), environment.Environment())
+	ERROR: type mismatch: INTEGER + BOOLEAN
+	>>> evalProgram(parser.Parser(lexer.Lexer('-true;')).ParseProgram(), environment.Environment())
+	ERROR: unknown operator: -BOOLEAN
+	>>> evalProgram(parser.Parser(lexer.Lexer('true + false;')).ParseProgram(), environment.Environment())
+	ERROR: unknown operator: BOOLEAN + BOOLEAN
+	>>> evalProgram(parser.Parser(lexer.Lexer('5; true+false; 5;')).ParseProgram(), environment.Environment())
+	ERROR: unknown operator: BOOLEAN + BOOLEAN
+	>>> evalProgram(parser.Parser(lexer.Lexer('if (10>1) {true+false;}')).ParseProgram(), environment.Environment())
+	ERROR: unknown operator: BOOLEAN + BOOLEAN
+	>>> evalProgram(parser.Parser(lexer.Lexer('if (10 > 1) {if (10>1) { return true+false;}return 1;}')).ParseProgram(), environment.Environment())
+	ERROR: unknown operator: BOOLEAN + BOOLEAN
+	>>> evalProgram(parser.Parser(lexer.Lexer('foobar;')).ParseProgram(), environment.Environment())
+	ERROR: identifier not found: foobar
+	>>> evalProgram(parser.Parser(lexer.Lexer('"Hello" - "World"')).ParseProgram(), environment.Environment())
+	ERROR: unknown operator: STRING - STRING
+	>>> evalProgram(parser.Parser(lexer.Lexer('{"name": "Monkey"}[function(x){x}];')).ParseProgram(), environment.Environment())
+	ERROR: unusable as hash key: FUNCTION
+	"""
 	return tsobject.Error(Message=msg)
 
 def isError(o: tsobject.Object) -> bool:
