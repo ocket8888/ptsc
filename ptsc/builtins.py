@@ -64,10 +64,10 @@ def pushFunc(*args) -> tsobject.Object:
 	return tsobject.Array(Elements=arr)
 
 builtins = {
-	"len": lenFunc,
-	"puts": putsFunc,
-	"first": firstFunc,
-	"last": lastFunc,
-	"rest": restFunc,
-	"push": pushFunc
+	"len": tsobject.Builtin(Fn=lenFunc),
+	"puts": tsobject.Builtin(Fn=putsFunc),
+	"first": tsobject.Builtin(Fn=firstFunc),
+	"last": tsobject.Builtin(Fn=lastFunc),
+	"rest": tsobject.Builtin(Fn=restFunc),
+	"push": tsobject.Builtin(Fn=pushFunc)
 }

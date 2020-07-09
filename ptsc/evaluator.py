@@ -408,6 +408,22 @@ def applyFunction(fn: tsobject.Object, *args: typing.Tuple[tsobject.Object]) -> 
 	20
 	>>> evalProgram(parser.Parser(lexer.Lexer("function(x){x;}(5);")).ParseProgram(), environment.Environment()).Value
 	5
+	>>> evalProgram(parser.Parser(lexer.Lexer('len("")')).ParseProgram(), environment.Environment())
+	0
+	>>> evalProgram(parser.Parser(lexer.Lexer('len("four")')).ParseProgram(), environment.Environment())
+	4
+	>>> evalProgram(parser.Parser(lexer.Lexer('len("hello world")')).ParseProgram(), environment.Environment())
+	11
+	>>> evalProgram(parser.Parser(lexer.Lexer('len(1)')).ParseProgram(), environment.Environment())
+	ERROR: argument to `len` not supported, got INTEGER
+	>>> evalProgram(parser.Parser(lexer.Lexer('len("one", "two")')).ParseProgram(), environment.Environment())
+	ERROR: wrong number of arguments. got=2, want=1
+	>>> evalProgram(parser.Parser(lexer.Lexer('len([])')).ParseProgram(), environment.Environment())
+	0
+	>>> evalProgram(parser.Parser(lexer.Lexer('len([1, 2, 3])')).ParseProgram(), environment.Environment())
+	3
+	>>> evalProgram(parser.Parser(lexer.Lexer('len([0])')).ParseProgram(), environment.Environment())
+	1
 	"""
 	if isinstance(fn, tsobject.Function):
 		try:

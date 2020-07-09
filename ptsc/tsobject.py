@@ -20,6 +20,9 @@ class ObjectType(enum.Enum):
 	ARRAY_OBJ = "ARRAY"
 	HASH_OBJ = "HASH"
 
+	def __str__(self) -> str:
+		return self.value
+
 class Object():
 	def __init__(self, *args, Type: ObjectType = ObjectType.UNDEFINED_OBJ, **kwargs):
 		super().__init__(*args, **kwargs)
