@@ -532,6 +532,30 @@ def evalIndexExpression(left: tsobject.Object, index: tsobject.Object) -> tsobje
 	return newError(f"index operator not supported: {left.Type}")
 
 def evalArrayIndexExpression(arr: tsobject.Array, index: tsobject.Integer) -> tsobject.Object:
+	"""
+	Evaluates an array index expression, e.g. '[1,2,3][0]'
+
+	>>> evalProgram(parser.Parser(lexer.Lexer('[1,2,3][0]')).ParseProgram(), environment.Environment())
+	1
+	>>> evalProgram(parser.Parser(lexer.Lexer('[1,2,3][1]')).ParseProgram(), environment.Environment())
+	2
+	>>> evalProgram(parser.Parser(lexer.Lexer('[1,2,3][2]')).ParseProgram(), environment.Environment())
+	3
+	>>> evalProgram(parser.Parser(lexer.Lexer('let i=0; [1][i]')).ParseProgram(), environment.Environment())
+	1
+	>>> evalProgram(parser.Parser(lexer.Lexer('[1,2,3][1+1]')).ParseProgram(), environment.Environment())
+	3
+	>>> evalProgram(parser.Parser(lexer.Lexer('let arr=[1,2,3]; arr[2]')).ParseProgram(), environment.Environment())
+	3
+	>>> evalProgram(parser.Parser(lexer.Lexer('let arr=[1,2,3]; arr[0]+arr[1]+arr[2]')).ParseProgram(), environment.Environment())
+	6
+	>>> evalProgram(parser.Parser(lexer.Lexer('let arr=[1,2,3]; let i=arr[0]; arr[i]')).ParseProgram(), environment.Environment())
+	2
+	>>> evalProgram(parser.Parser(lexer.Lexer('[1,2,3][3]')).ParseProgram(), environment.Environment())
+	undefined
+	>>> evalProgram(parser.Parser(lexer.Lexer('[1,2,3][-1]')).ParseProgram(), environment.Environment())
+	undefined
+	"""
 	if index.Value < 0 or index.Value > len(arr.Elements) - 1:
 		return UNDEFINED
 	return arr.Elements[index.Value]
