@@ -55,6 +55,15 @@ def Eval(node: ast.Node, env: environment.Environment) -> typing.Optional[tsobje
 	'(x + 2)'
 	>>> evalProgram(parser.Parser(lexer.Lexer('"Hello World!"')).ParseProgram(), environment.Environment()).Value
 	'Hello World!'
+	>>> arr = evalProgram(parser.Parser(lexer.Lexer('[1, 2*2, 3+3]')).ParseProgram(), environment.Environment()).Elements
+	>>> len(arr)
+	3
+	>>> arr[0]
+	1
+	>>> arr[1]
+	4
+	>>> arr[2]
+	6
 	"""
 	if isinstance(node, ast.Program):
 		return evalProgram(node, env)
