@@ -47,9 +47,9 @@ def restFunc(*args) -> tsobject.Object:
 	arg = args[0]
 	if arg.Type != tsobject.ObjectType.ARRAY_OBJ:
 		return evaluator.newError(f"argument to `rest` must be ARRAY, got {arg.Type}")
-	if len(arg) > 1:
-		return arg[1:]
-	return tsobject.Array() if len(arg) == 1 else evaluator.UNDEFINED
+	if len(arg.Elements) > 1:
+		return tsobject.Array(Elements=arg.Elements[1:])
+	return tsobject.Array() if len(arg.Elements) == 1 else evaluator.UNDEFINED
 
 def pushFunc(*args) -> tsobject.Object:
 	if len(args) != 2:

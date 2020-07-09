@@ -448,6 +448,26 @@ def applyFunction(fn: tsobject.Object, *args: typing.Tuple[tsobject.Object]) -> 
 	ERROR: wrong number of arguments. got=2, want=1
 	>>> evalProgram(parser.Parser(lexer.Lexer('last(1)')).ParseProgram(), environment.Environment())
 	ERROR: argument to `last` must be ARRAY, got INTEGER
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([1,2,3])[0]')).ParseProgram(), environment.Environment())
+	2
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([1,2,3])[1]')).ParseProgram(), environment.Environment())
+	3
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([1,2,3])[2]')).ParseProgram(), environment.Environment())
+	undefined
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([3,2,1])[0]')).ParseProgram(), environment.Environment())
+	2
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([3,2,1])[1]')).ParseProgram(), environment.Environment())
+	1
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([3,2,1])[2]')).ParseProgram(), environment.Environment())
+	undefined
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([0])[0]')).ParseProgram(), environment.Environment())
+	undefined
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([])')).ParseProgram(), environment.Environment())
+	undefined
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest([1,2,3],[])')).ParseProgram(), environment.Environment())
+	ERROR: wrong number of arguments. got=2, want=1
+	>>> evalProgram(parser.Parser(lexer.Lexer('rest("foo")')).ParseProgram(), environment.Environment())
+	ERROR: argument to `rest` must be ARRAY, got STRING
 	"""
 	if isinstance(fn, tsobject.Function):
 		try:
@@ -490,9 +510,9 @@ def evalIndexExpression(left: tsobject.Object, index: tsobject.Object) -> tsobje
 	return newError(f"index operator not supported: {left.Type}")
 
 def evalArrayIndexExpression(arr: tsobject.Array, index: tsobject.Integer) -> tsobject.Object:
-	if index < 0 or index > len(arr.Elements) - 1:
-		return NULL
-	return arr.Elements[index]
+	if index.Value < 0 or index.Value > len(arr.Elements) - 1:
+		return UNDEFINED
+	return arr.Elements[index.Value]
 
 def evalHashLiteral(node: ast.HashLiteral, env: environment.Environment) -> tsobject.Object:
 	pairs = {}
