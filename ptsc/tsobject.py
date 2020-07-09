@@ -35,6 +35,16 @@ class Object():
 		return self.Inspect()
 
 class HashKey():
+	"""
+	Represents the hashed value of any hashable object.
+
+	>>> String(Value="Hello World").HashKey() == String(Value="Hello World").HashKey()
+	True
+	>>> String(Value="My name is johnny").HashKey() == String(Value="My name is johnny").HashKey()
+	True
+	>>> String(Value="Hello World").HashKey() == String(Value="My name is johnny").HashKey()
+	False
+	"""
 	def __init__(self, *args, Type: ObjectType = ObjectType.UNDEFINED_OBJ, Value: int = 0, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.Type = Type
