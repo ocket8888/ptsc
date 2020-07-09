@@ -72,6 +72,9 @@ class Program():
 	def __str__(self) -> str:
 		return "".join(str(s) for s in self.Statements)
 
+	def __repr__(self) -> str:
+		return "".join(str(s) for s in self.Statements)
+
 #### STATEMENTS ####
 class LetStatement(Statement):
 	def __init__(self, *args, Name: Identifier = None, Value: Expression = None, **kwargs):
