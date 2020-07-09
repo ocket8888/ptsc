@@ -561,13 +561,19 @@ def evalArrayIndexExpression(arr: tsobject.Array, index: tsobject.Integer) -> ts
 	return arr.Elements[index.Value]
 
 def evalHashLiteral(node: ast.HashLiteral, env: environment.Environment) -> tsobject.Object:
+	"""
+	Evaluates object literal expressions, e.g. '{"one": 1}'.
+
+	>>> evalProgram(parser.Parser(lexer.Lexer('let two = "two"; {"one": 10-9, two: 1+1, "thr"+"ee": 6/2, 4:4, true: 5, false: 6}')).ParseProgram(), environment.Environment())
+	{one: 1, two: 2, three: 3.0, 4: 4, true: 5, false: 6}
+	"""
 	pairs = {}
-	for k, v in node.Pairs:
+	for k, v in node.Pairs.items():
 		key = Eval(k, env)
 		if isError(key):
 			return key
 
-		if not isinstance(key, tsobject.Hashable):
+		if not hasattr(key, "HashKey"):
 			return newError(f"unusable as hash key: {key.Type}")
 
 		value = Eval(v, env)

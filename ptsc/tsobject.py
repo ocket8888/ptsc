@@ -135,5 +135,5 @@ class Hash(Object):
 		self.Pairs = Pairs if Pairs else {}
 
 	def Inspect(self) -> str:
-		pairs = ', '.join(': '.join((k,v)) for k, v in self.Pairs)
+		pairs = ', '.join(': '.join((k.Inspect(),v.Inspect())) for k, v in self.Pairs.values())
 		return f"{{{pairs}}}"

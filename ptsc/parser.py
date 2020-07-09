@@ -234,7 +234,6 @@ class Parser():
 		>>> p.Statements[0].Expression.TokenLiteral()
 		'foobar'
 		"""
-
 		return ast.Identifier(Value=self.curToken.Literal, Token=self.curToken)
 
 	def parseIntegerLiteral(self) -> typing.Optional[ast.Expression]:
