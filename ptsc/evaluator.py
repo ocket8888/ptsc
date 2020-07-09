@@ -468,6 +468,19 @@ def applyFunction(fn: tsobject.Object, *args: typing.Tuple[tsobject.Object]) -> 
 	ERROR: wrong number of arguments. got=2, want=1
 	>>> evalProgram(parser.Parser(lexer.Lexer('rest("foo")')).ParseProgram(), environment.Environment())
 	ERROR: argument to `rest` must be ARRAY, got STRING
+	>>> evalProgram(parser.Parser(lexer.Lexer('let arr = push([1,2,3], 1); arr[3]')).ParseProgram(), environment.Environment())
+	1
+	>>> evalProgram(parser.Parser(lexer.Lexer('let arr = push([3,2,1], 2); arr[3]')).ParseProgram(), environment.Environment())
+	2
+	>>> evalProgram(parser.Parser(lexer.Lexer('let arr = push([0], 1); arr[1]')).ParseProgram(), environment.Environment())
+	1
+	>>> evalProgram(parser.Parser(lexer.Lexer('push([],1)[0];')).ParseProgram(), environment.Environment())
+	1
+	>>> evalProgram(parser.Parser(lexer.Lexer('push([1,2,3])')).ParseProgram(), environment.Environment())
+	ERROR: wrong number of arguments. got=1, want=2
+	>>> evalProgram(parser.Parser(lexer.Lexer('push("foo", 1)')).ParseProgram(), environment.Environment())
+	ERROR: first argument to `push` must be ARRAY, got STRING
+
 	"""
 	if isinstance(fn, tsobject.Function):
 		try:
